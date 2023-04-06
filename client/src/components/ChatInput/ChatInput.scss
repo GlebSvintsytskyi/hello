@@ -1,0 +1,43 @@
+.chat-input {
+    display: flex;
+    padding: 20px;
+    position: relative;
+    &__smile-btn {
+        cursor: pointer;
+        opacity: 0.4;
+        background-color: #fff;
+        font-size: 18px;
+        margin: 12px;
+        transition: opacity 0.15s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &__emoji-picker {
+        position: absolute;
+        bottom: 70px;
+    }
+
+    &__actions {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        width: 50px;
+        justify-content: space-between;
+        margin-left: 10px;
+        opacity: 0.4;
+        transition: opacity 0.15s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    input {
+        &:focus {
+            box-shadow: none;
+        }
+    }
+}

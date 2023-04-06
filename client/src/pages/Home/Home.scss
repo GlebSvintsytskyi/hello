@@ -1,0 +1,73 @@
+.chat {
+    display: flex;
+    background: #fff;
+    width: 1140px;
+    height: 720px;
+    margin: 0 auto;
+    box-shadow: 0px 0px 25px rgb(151, 149, 149);
+
+    &__sidebar {
+        width: 320px;
+        border-right: 1px solid rgb(235, 227, 227);
+
+        &-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+
+            &-btn {
+                cursor: pointer;
+                opacity: 0.4;
+                background-color: #fff;
+                font-size: 18px;
+                transition: opacity 0.15s ease-in-out;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+            span {
+                margin-left: 10px;
+            }
+        }
+    }
+
+    &__dialogs {
+        flex: 1;
+
+        &-messages {
+            overflow: auto;
+            height: calc(100% - 160px);
+        }
+
+        &-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            border-bottom: 1px solid rgb(235, 227, 227);
+
+            &-btn {
+                cursor: pointer;
+                opacity: 0.4;
+                background-color: #fff;
+                font-size: 22px;
+                transition: opacity 0.15s ease-in-out;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+            &-username {
+                font-weight: 600;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+            &-center {
+                text-align: center;
+            }
+        }
+    }
+}

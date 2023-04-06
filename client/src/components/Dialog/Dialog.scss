@@ -1,0 +1,15 @@
+.search {
+    padding: 20px;
+}
+
+.items {
+    padding: 20px;
+    overflow: auto;
+    height: 590px;
+    cursor: pointer;
+    :hover {
+        transition: all 2ms;
+        background: #397cb6;
+        color: #fff;
+    }
+}
