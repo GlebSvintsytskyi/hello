@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { isEmail } = require('validator');
+import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
@@ -8,8 +7,13 @@ const UserSchema = new Schema(
     email: {
         type: String,
         required: 'Email address is required',
-        validate: [isEmail, 'Invalid email'],
-        unique: true
+        unique: true,
+        validate: {
+            validator: function (v) {
+              return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: '{VALUE} is not a valid email!'
+          }
     },
     avatar: String,
     fullname: {
@@ -25,11 +29,14 @@ const UserSchema = new Schema(
         default: false
     },
     confirm_hash: String,
-    last_seen: Date,
+    last_seen: {
+        type: Date,
+        default: new Date()
+    },
 }, {
     timestamps: true
 });
 
 const UserModel = mongoose.model('User', UserSchema);
 
-module.exports = UserModel;
+export default UserModel;
