@@ -1,20 +1,24 @@
 import React from 'react';
-import Block  from '../../components/Block';
-import Button from '../../components/Button';
 import { LockOutlined, UserOutlined, ScheduleOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
 import { useLocation, NavLink } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
+import Block  from '../../components/Block';
+import Button from '../../components/Button';
+import fetchUserRegistration from '../../utills/api/user';
+import { fetchUserLogin } from '../../utills/api/user';
 
 import './Auth.scss'
 
 const Auth = () => {
     const location = useLocation();
+    const dispatch = useDispatch();
     const isLogin = location.pathname === '/registration';
-    const onFinish = (values: any) => {
-        console.log('Received values of form: ', values);
-    };
+    const navigate = useNavigate();
     const formik = useFormik({
         initialValues: {
           firstName: '',
@@ -40,6 +44,19 @@ const Auth = () => {
           },
         });
 
+        const pushRegistration =  () => {
+            return async dispatch => {
+                dispatch(fetchUserRegistration(formik.values.firstName, formik.values.email,formik.values.password));
+                
+            }
+        }
+    
+        const pushLogin =  () => {
+            return async dispatch => {
+                dispatch(fetchUserLogin(formik.values.email, formik.values.password));
+            }
+        }
+
     return (
         <section className='auth'>
             <Block>
@@ -52,7 +69,7 @@ const Auth = () => {
                     name="normal_login"
                     className="login-form"
                     initialValues={{ remember: true }}
-                    onFinish={onFinish}
+                    
                 >
                         {isLogin ? 
                             <>
@@ -141,7 +158,9 @@ const Auth = () => {
                                     ) : null}
                                 </Form.Item>
                                 <Form.Item>
-                                    <Button type="primary" size='large'>Registration</Button>
+                                    <Button type="primary" size='large' onClick={() => dispatch( pushRegistration() ).then( navigate('/im') )}>
+                                        Registration
+                                    </Button>
                                 </Form.Item>
                                 <Form.Item>
                                     <NavLink className='auth__register-link' to='/login'>{isLogin ? "Log in" : "Registration"}</NavLink>
@@ -192,7 +211,10 @@ const Auth = () => {
                                     ) : null}
                                 </Form.Item>
                                 <Form.Item>
-                                    <Button type="primary" size='large'>Log in</Button>
+                                    <Button type="primary" size='large' 
+                                    onClick={() => dispatch( pushLogin() ).then( navigate('/im') )}>
+                                        Log in
+                                    </Button>
                                 </Form.Item>
                                 <Form.Item>
                                     <NavLink className='auth__register-link' to='/registration'>{isLogin ? "Log in" : "Registration"}</NavLink>

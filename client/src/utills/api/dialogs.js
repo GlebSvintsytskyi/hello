@@ -1,7 +1,7 @@
-import { axios } from '../../core';
+import { axiosAuth } from "../../core/axios";
 
 const dialogsApi =  {
-    getAll: () => axios.get('/dialogs')
+    getAll: () => axiosAuth.get('/dialogs')
 }
 
 export default dialogsApi;

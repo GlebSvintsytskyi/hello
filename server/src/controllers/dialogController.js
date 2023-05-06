@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 
 class DialogController {
     getDialogs = async(req, res) => {
-        console.log(req)
         try {
             const id = req.user.id;
 

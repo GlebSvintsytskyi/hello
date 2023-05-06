@@ -1,7 +1,7 @@
-import { axios } from '../../core';
+import { axiosAuth } from "../../core/axios";
 
 const messagesApi =  {
-    getAllByDialogId: (id) => axios.get('/messages?dialog=' + id)
+    getAllByDialogId: (id) => axiosAuth.get('/messages?dialog=' + id)
 }
 
 export default messagesApi;

@@ -40,7 +40,7 @@ class UserController {
 
             const candidate = await UserModel.findOne({ email: postData.email });
              if (candidate) {
-                 return res.json({
+                 return res.status(403).json({
                      message: 'user already exists'
                  });
             }
@@ -49,12 +49,12 @@ class UserController {
             await user.save();
             const token = generateToken( user._id, user.email, user.fullname, user.confirmed, user.last_seen);
 
-            return res.json({
+            return res.status(200).json({
                 token,
                 user
             });
         } catch (error) {
-            res.json(error);
+            res.status(403).json(error);
         } 
     }
 
@@ -73,7 +73,7 @@ class UserController {
 
         const token = generateToken(user._id, user.email, user.fullname, user.confirmed, user.last_seen);
 
-        return res.json({
+        return res.status(200).json({
             token,
             user
         });
