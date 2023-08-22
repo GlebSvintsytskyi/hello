@@ -1,12 +1,12 @@
 import UserModel from '../schemas/User.js';
 import generateToken from '../utils/generateToken.js';
+import gmailSendMailer from '../utils/gmailSendMailer.js';
 
 import bcrypt from 'bcrypt';
-import jwt_decode from 'jwt-decode';
 
 class UserController {
+
     getUser = async(req, res) => {
-        console.log(req)
         try {
             const id = req.params.id;
             const user = await UserModel.findById(id);
@@ -30,13 +30,61 @@ class UserController {
         }
     }
 
+    findUsers = async(req,  res) => {
+        const query = req.query.query;
+        UserModel.find()
+          .or([
+            { fullname: new RegExp(query, "i") },
+            { email: new RegExp(query, "i") },
+          ])
+          .then((users) => res.json(users))
+          .catch((err) => {
+            return res.status(404).json({
+              status: "error",
+              message: err,
+            });
+          });
+      };
+
+    verify = async(req, res) => {
+        const hash = req.query.hash;
+        if (!hash) {
+            return res.json({
+                status: 422,
+                message: 'Invalid hash'
+            });
+        }
+
+        const user = await UserModel.findOne({ confirm_hash: hash });
+        if (!user) {
+            return res.json({
+                status: 403,
+                message: 'Hash not found'
+            });
+        }
+
+        user.confirmed = true;
+        await user.save();
+
+        res.json({
+            status: 'success',
+            message: 'Success verify'
+        })
+    }
+
     createUser = async(req, res) => {
         try {
             const postData = {
                 email: req.body.email,
                 fullname: req.body.fullname,
-                password: bcrypt.hashSync(req.body.password, 5)
-              }
+                password: bcrypt.hashSync(req.body.password, 5),
+            }
+
+            if (req.body.password !== req.body.password_2) {
+                return res.status(403).json({
+                    message: 'password mismatch'
+                });
+            }
 
             const candidate = await UserModel.findOne({ email: postData.email });
              if (candidate) {
@@ -47,7 +95,8 @@ class UserController {
 
             const user = new UserModel(postData);
             await user.save();
-            const token = generateToken( user._id, user.email, user.fullname, user.confirmed, user.last_seen);
+            await gmailSendMailer(user.email, user.confirm_hash);
+            const token = generateToken( user._id, user.email, user.fullname, user.confirmed, user.last_seen, user.confirm_hash);
 
             return res.status(200).json({
                 token,

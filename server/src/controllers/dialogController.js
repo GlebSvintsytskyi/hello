@@ -1,13 +1,17 @@
 import DialogModel from '../schemas/Dialog.js';
 import MessageModel from '../schemas/Message.js';
-import mongoose from 'mongoose';
 
 class DialogController {
+
+    constructor(io) {
+        this.io = io;
+    }
+
     getDialogs = async(req, res) => {
         try {
             const id = req.user.id;
 
-            const dialogs = await DialogModel.find({ author: id }).populate(['author', 'partner']);
+            const dialogs = await DialogModel.find( { $or:[ {author: id}, {partner: id}] } ).populate(['author', 'partner']);
 
             res.json(dialogs);
         } catch (error) {
@@ -33,8 +37,21 @@ class DialogController {
                 dialog: dialog._id
             });
             await message.save();
+            dialog.lastMessage = message._id;
+            await dialog.save().then( () => {
+                DialogModel
+                    .populate(dialog, ['lastMessage'])
+                    .then( dialog => {
+                        res.json(dialog);
+                        this.io.emit('SERVER:DIALOG:CREATED', {
+                            ...postData,
+                            dialog: dialog
+                        });
+                    })
+                
+            });;
+            
 
-            return res.json(dialog);
         } catch (error) {
             res.status(404).json(error);
         }

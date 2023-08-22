@@ -12,8 +12,8 @@
             border-radius: 50px;
             width: 33px;
             height: 33px;
-            margin-right: 13px;
-            margin-bottom: 5px;
+            margin-right: 20px;
+            margin-bottom: 20px;
             font-size: 14px;
             line-height: 31px;
           }
@@ -48,26 +48,31 @@
 
     &__attachments {
         display: flex;
+        order: 1;
 
         &--item {
             margin-right: 7px;
             margin-bottom: 10px;
             cursor: pointer;
             img {
-                width: 70px;
-                height: 70px;
+                width: 50px;
+                height: 50px;
                 border-radius: 15px;
             }
         }
     }
 
     &--isaudio {
-
         #{$self}__bubble {
             width: 250px;
         }
 
         #{$self}__audio {
+            padding: 10px;
+            align-items: center;
+            background-color: #1c68e3;
+            border-radius: 6px 6px 0 6px;
+            width: 250px;
             &-info {
                 display: flex;
                 align-items: center;
@@ -113,11 +118,7 @@
         }
 
         #{$self}__avatar {
-            img {
-                margin-right: 0px;
-                margin-left: 13px;
-                margin-bottom: 40px;
-            }
+            margin-left: 15px;
         }
 
         #{$self}__bubble {
@@ -125,6 +126,7 @@
             border: 1px solid seashell;
             box-shadow: 0px 4px 4px rgb(182, 182, 198);
             border-radius: 0px 0px 12px 0px;
+            order: 2;
         }
 
         #{$self}__text {

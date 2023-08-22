@@ -7,7 +7,7 @@ import './Status.scss';
 const Status = ({ online }) => {
     return (
         <span className={classNames('status', {'status--online' : online})}>
-            Online
+            {online ? 'online' : 'offline'}
         </span>
     )
 }

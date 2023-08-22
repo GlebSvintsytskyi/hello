@@ -5,7 +5,7 @@ import { Input, Empty } from 'antd';
 
 import './Dialog.scss';
 
-const Dialog = ({ items, userId, onSearch, inputValue, currentDialogId, onSelectDialog }) => {
+const Dialog = ({ items, userId, onSearch, inputValue }) => {
 
     return (
         <>
@@ -17,18 +17,32 @@ const Dialog = ({ items, userId, onSearch, inputValue, currentDialogId, onSelect
                 />
             </div>
             <div className='items'> 
-                {items.length ? orderBy(items, ["created_at"], ["desc"]).map(item => (
+                {items.length ? orderBy(items, ["created_at"], ["desc"]).map(item => 
+                    item.author._id === userId ?
+                    (
                     <DialogItem
                         key={item._id}
-                        userId={item._id}
-                        user={item.user}
+                        userId={userId}
+                        user={item.partner}
                         message={item}
                         unreaded={0}
-                        isMe={item.user._id === userId}
-                        currentDialogId={currentDialogId}
-                        onSelect={onSelectDialog}
+                        isMe={item.author._id === userId}
+                        currentDialogId={item._id}
                     />
-                )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нічого не найденно" />}   
+                    )
+                    :
+                    (
+                    <DialogItem
+                        key={item._id}
+                        userId={userId}
+                        user={item.author}
+                        message={item}
+                        unreaded={0}
+                        isMe={item.author._id === userId}
+                        currentDialogId={item._id}
+                    />    
+                    )
+                ) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нічого не знайденно" />}   
             </div>
         </>
     )
@@ -38,6 +52,6 @@ export default Dialog;
 
 
 
-// const filterItems = items.filter(item => {
-//     return item.user.fullname.toLowerCase().includes(value.toLowerCase());
-// })
+                    
+    
+                   

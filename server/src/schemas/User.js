@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import generatePasswordHash from '../utils/generatePasswordHash.js';
 const { Schema } = mongoose;
 
 const UserSchema = new Schema(
@@ -28,7 +28,10 @@ const UserSchema = new Schema(
         type: Boolean,
         default: false
     },
-    confirm_hash: String,
+    confirm_hash: {
+        type: String,
+        default: null
+    },
     last_seen: {
         type: Date,
         default: new Date()
@@ -36,6 +39,12 @@ const UserSchema = new Schema(
 }, {
     timestamps: true
 });
+
+UserSchema.pre("save", async function (next) {
+    const user = this;
+  
+    user.confirm_hash = await generatePasswordHash(new Date().toString());
+  });
 
 const UserModel = mongoose.model('User', UserSchema);
 

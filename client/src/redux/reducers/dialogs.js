@@ -1,6 +1,6 @@
 const initialState = {
     items: [],
-    currentDialogId: null,
+    currentDialogId: window.location.pathname.split('/dialog/')[1],
     isLoading: false
 }
 
@@ -22,5 +22,8 @@ const dialogs = (state = initialState, { type, payload }) => {
             return state;
     }
 }
+
+export const setItems = data => ({type: 'DIALOGS:SET_ITEMS', payload: data});
+export const setCarrentDialogId = data => ({type: 'DIALOGS:SET_CARRENT_DIALOG_ID', payload: data});
 
 export default dialogs;

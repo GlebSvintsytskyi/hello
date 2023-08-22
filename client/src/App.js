@@ -1,20 +1,24 @@
 import React from 'react';
+import {Route, Routes, useNavigate} from 'react-router-dom';
+import { createBrowserHistory } from "history";
+
 import Auth from './pages/Auth/index';
 import Home from './pages/Home/index';
-import {Route, Routes} from 'react-router-dom'
-import { useSelector } from 'react-redux';
-
+import CheckEmailInfo from './pages/Auth/components/CheckInfo';
 
 function App() {
+  const customHistory = createBrowserHistory();
+  const navigate = useNavigate();
 
-  const isAuth = useSelector(state => state.users.isAuth);
   return (
     <div className='wrapper'>
       <Routes>
-        <Route path="/" element={<Auth/>} />  
-        <Route path="/login" element={<Auth/>} />  
-        <Route path="/registration" element={<Auth/>} />  
-        <Route path="/im" element={<Home/>} />  
+        <Route exact path="/" element={<Auth/>} />  
+        <Route exact path="/login" element={<Auth/>} />  
+        <Route exact path="/registration" element={<Auth/>} />
+        <Route exact strict path="/verify" element={<CheckEmailInfo history={customHistory} navigate={navigate}/>} />  
+        <Route exact path="/im" element={<Home history={customHistory}/>} />  
+        <Route exact path="/dialog/:id" element={<Home history={customHistory}/>} />
       </Routes>
     </div>
   );

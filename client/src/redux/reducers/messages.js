@@ -1,5 +1,5 @@
 const initialState = {
-    items: null,
+    items: [],
     isLoading: false,
 }
 
@@ -16,6 +16,18 @@ const dialogs = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 isLoading: payload
+            };
+
+        case 'MESSAGES:REMOVE_MESSAGE':
+            return {
+                ...state,
+                items: state.items.filter(message => message._id !== payload),
+            };
+
+        case 'MESSAGES:ADD_MESSAGE':
+            return {
+                ...state,
+                items: [...state.items, payload],
             };
     
         default:

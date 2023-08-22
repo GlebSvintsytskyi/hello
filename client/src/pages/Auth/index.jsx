@@ -33,10 +33,12 @@ const Auth = () => {
               .required('Required'),
               password: Yup.string()
               .max(10, 'Must be 10 characters or less')
+              .min(4, 'Must be 4 min')
               .required('Required'),
               email: Yup.string().email('Invalid email address').required('Required'),
               password_2: Yup.string()
               .max(10, 'Must be 10 characters or less')
+              .min(4, 'Must be 4 min')
               .required('Required'),
           }),
           onSubmit: values => {
@@ -46,14 +48,13 @@ const Auth = () => {
 
         const pushRegistration =  () => {
             return async dispatch => {
-                dispatch(fetchUserRegistration(formik.values.firstName, formik.values.email,formik.values.password));
-                
+                dispatch(fetchUserRegistration(formik.values.firstName, formik.values.email, formik.values.password, formik.values.password_2, navigate));
             }
         }
     
         const pushLogin =  () => {
             return async dispatch => {
-                dispatch(fetchUserLogin(formik.values.email, formik.values.password));
+                dispatch(fetchUserLogin(formik.values.email, formik.values.password, navigate));
             }
         }
 
@@ -77,7 +78,7 @@ const Auth = () => {
                                     name="username"
                                     rules={[{ required: true, message: 'Please input your Username!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.firstName && formik.errors.firstName ? 'error' : 'success'}
+                                    validateStatus={ formik.touched.firstName && formik.errors.firstName ? 'error' : formik.values.firstName === '' ? '' : 'success'}
                                 >
                                 <Input 
                                     id="firstName"
@@ -98,7 +99,7 @@ const Auth = () => {
                                     name="email"
                                     rules={[{ required: true, message: 'Please input your email!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.email && formik.errors.email ? 'error' : 'success'}
+                                    validateStatus={formik.touched.email && formik.errors.email ? 'error' : formik.values.email === '' ? '' : 'success'}
                                 >
                                 <Input
                                     id="email"
@@ -119,7 +120,7 @@ const Auth = () => {
                                     name="password"
                                     rules={[{ required: true, message: 'Please input your Password!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.password && formik.errors.password ? 'error' : 'success'}
+                                    validateStatus={formik.touched.password && formik.errors.password ? 'error' : formik.values.password === '' ? '' : 'success'}
                                 >
                                     <Input
                                         id="password"
@@ -140,7 +141,7 @@ const Auth = () => {
                                     name="password"
                                     rules={[{ required: true, message: 'Please repeat your Password!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.password_2 && formik.errors.password_2 ? 'error' : 'success'}
+                                    validateStatus={formik.touched.password_2 && formik.errors.password_2 ? 'error' : formik.values.password_2 === '' ? '' : 'success'}
                                 >
                                     <Input
                                         id="password_2"
@@ -158,7 +159,7 @@ const Auth = () => {
                                     ) : null}
                                 </Form.Item>
                                 <Form.Item>
-                                    <Button type="primary" size='large' onClick={() => dispatch( pushRegistration() ).then( navigate('/im') )}>
+                                    <Button type="primary" size='large' onClick={() => dispatch( pushRegistration() )}>
                                         Registration
                                     </Button>
                                 </Form.Item>
@@ -172,7 +173,7 @@ const Auth = () => {
                                     name="email"
                                     rules={[{ required: true, message: 'Please input your Email!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.email && formik.errors.email ? 'error' : 'success'}
+                                    validateStatus={formik.touched.email && formik.errors.email ? 'error' : formik.values.email === '' ? '' : 'success'}
                                 >
                                 <Input 
                                     id="email"
@@ -193,7 +194,7 @@ const Auth = () => {
                                     name="password"
                                     rules={[{ required: true, message: 'Please input your Password!' }]}
                                     hasFeedback
-                                    validateStatus={formik.touched.password && formik.errors.password ? 'error' : 'success'}
+                                    validateStatus={formik.touched.password && formik.errors.password ? 'error' : formik.values.password === '' ? '' : 'success'}
                                 >
                                     <Input
                                         id="password"
@@ -212,7 +213,7 @@ const Auth = () => {
                                 </Form.Item>
                                 <Form.Item>
                                     <Button type="primary" size='large' 
-                                    onClick={() => dispatch( pushLogin() ).then( navigate('/im') )}>
+                                    onClick={() => dispatch( pushLogin() )}>
                                         Log in
                                     </Button>
                                 </Form.Item>

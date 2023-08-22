@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Button, Popover, Space } from 'antd';
 
 import Time from '../../components/Time/index';
 import PropTypes from 'prop-types';
@@ -9,20 +10,23 @@ import Avatar from '../Avatar/index';
 import waveSvg from '../../assets/img/wave.svg';
 import { PauseOutlined } from '@ant-design/icons';
 import playSvg from '../../assets/img/play.svg';
+import data from '@emoji-mart/data'
+import { init } from 'emoji-mart'
+import reactStringReplace from 'react-string-replace';
 
 import './Message.scss'; 
 
 const Message = ({
-    avatar, 
-    user, 
+    user,
     text, 
-    date, 
-    isMe, 
+    date,
+    isMe,  
     isReaded, 
     attachments, 
     isTyping,
-    audio
+    onRemoveMessage
 }) => {
+    init({ data });
 
     const [isPlaying, setIsPlaing] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -49,58 +53,96 @@ const Message = ({
         setIsPlaing(false);
     }
 
+    const renderAttachmetsItems = (item) => {
+        if (item.ext === 'webm') {
+            return (
+                <div className="message__audio">
+                    <audio ref={audioElem}
+                    src={item.url} 
+                    preload="auto" 
+                />
+                    <div className="message__audio-progress">
+                        <div className="message__audio-info">
+                            <div className="message__audio-btn">
+                                { isPlaying ? ( 
+                                    <button onClick={pauseAudio}><PauseOutlined style={{color: '#fff'}}/></button>
+                                ) : ( 
+                                    <button onClick={startAudio}><img src={playSvg} alt='Playing svg'/></button>
+                                )}
+                            </div>
+                            <div className="message__audio-wave">
+                                <img src={waveSvg} alt="Wave svg" />
+                            </div>
+                            <span className="message__audio-duration">{convertCurrentTime(currentTime)}</span>
+                        </div>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div className="message__attachments">
+                    { attachments.map(item => (
+                        <div key={item.url} className="message__attachments--item">
+                            <img src={item.url} alt={item.filename}/>
+                        </div>
+                    ))
+                    }
+                </div>
+            )
+        }
+    }
+
+    const isAudio = () => {
+        const file = attachments[0];
+        return attachments.length && file.ext === 'webm';
+    }
+
     return (
         <div className={classNames('message', {
             'message--isme' : isMe,
             'message--istyping' : isTyping,
-            'message--isaudio' : audio,
-            'message--image' : attachments && attachments.length === 1
+            'message--isaudio' : isAudio(),
+            'message--image' : !isAudio() && attachments && attachments.length === 1 && !text
         })}>
             <div className="message__content">
                 <div className="message__avatar">
                     <Avatar user={user}/>
                 </div>
                 <div className="message__info">
-                    {(audio || text || isTyping) && (
+                    {(text || isTyping) && (
                         <div className="message__bubble">
-                            { text && <p className='message__text'>{text}</p>}
+                            { text &&
+                               isMe ? <Space wrap>
+                                        <Popover content={
+                                            <>
+                                                <Button onClick={onRemoveMessage}>DELETE</Button>
+                                            </>
+                                        } 
+                                          trigger="click">
+                                            <p className="message__text">
+                                            {reactStringReplace(text, /:(.+?):/g, (match, i) => (
+                                                <em-emoji key={i} id={match}></em-emoji>
+                                            ))}
+                                            </p>
+                                        </Popover>
+                                       </Space>
+                                    :
+                                    <p className="message__text">
+                                    {reactStringReplace(text, /:(.+?):/g, (match, i) => (
+                                        <em-emoji key={i} id={match}></em-emoji>
+                                    ))}
+                                    </p>
+                            }
                             { isTyping && <div className="message__typing">
                                 <span/>
                                 <span/>
                                 <span/>
                             </div>}
-                            { audio && <div className="message__audio">
-                                <audio ref={audioElem}
-                                src={audio} 
-                                preload="auto" 
-                            />
-                                <div className="message__audio-progress">
-                                    <div className="message__audio-info">
-                                        <div className="message__audio-btn">
-                                            { isPlaying ? ( 
-                                                <button onClick={pauseAudio}><PauseOutlined style={{color: '#fff'}}/></button>
-                                            ) : ( 
-                                                <button onClick={startAudio}><img src={playSvg} alt='Playing svg'/></button>
-                                            )}
-                                        </div>
-                                        <div className="message__audio-wave">
-                                            <img src={waveSvg} alt="Wave svg" />
-                                        </div>
-                                        <span className="message__audio-duration">{convertCurrentTime(currentTime)}</span>
-                                    </div>
-                                </div>
-                            </div>}
+                            
                         </div>
                     )}
                     { attachments && (
-                        <div className="message__attachments">
-                            { attachments.map(item => (
-                                <div key={item.url} className="message__attachments--item">
-                                    <img src={item.url} alt={item.filename}/>
-                                </div>
-                            ))
-                            }
-                        </div>
+                        attachments.map(item => renderAttachmetsItems(item))
                     )}
                     { date && <div className="message__bot--info">
                         <span className='message__date'>
@@ -109,6 +151,7 @@ const Message = ({
                         <IconReaded isMe={isMe} isReaded={isReaded}/>
                     </div>}
                 </div>
+                <IconReaded isMe={isMe} isReaded={isReaded}/>
             </div>
         </div>
     )

@@ -1,4 +1,3 @@
-import { error } from 'console';
 import MessageModel from '../schemas/Message.js';
 
 class MessageController {
@@ -10,8 +9,14 @@ class MessageController {
     getMessages = async(req, res) => {
         try {
             const dialogId = req.query.dialog;
+            const userId = req.user.id;
 
-            const messages = await MessageModel.find({ dialog: dialogId }).populate(['dialog']);
+            await MessageModel.updateMany(
+                { dialog: dialogId, user: { $ne: userId } },
+                { $set: { unread: true } }
+            )
+ 
+            const messages = await MessageModel.find({ dialog: dialogId }).populate(['dialog', 'user', 'attachments']);
 
             res.json(messages);
         } catch (error) {
@@ -24,17 +29,20 @@ class MessageController {
             const postData = {
                 text: req.body.text,
                 dialog: req.body.dialog_id,
+                attachments: req.body.attachments,
+                audio: req.body.audio,
                 user: req.user.id
             }
     
             const message = new MessageModel(postData);
             await message.save().then( () => {
                 MessageModel
-                    .populate(message, {path: 'dialog'})
+                    .populate(message, ['dialog', 'user', 'attachments'])
                     .then( msg => {
                         res.status(200).json(msg);
                         this.io.emit('SERVER:NEW_MESSAGE', msg);
                     })
+                
             });
         } catch (error) {
             res.status(404).json(error);

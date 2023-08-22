@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import  Dialog  from '../components/Dialog/index';
-import dialogsActions from '../redux/actions/dialogs';
+import dialogsActions from '../redux/actions/dialogs'
+import socket from "../core/socket";
 
-const Dialogs = ({ fetchDialogs, currentDialogId, setCurrentDialogId, items, userId }) => {
+const Dialogs = ({ fetchDialogs, currentDialogId, setCurrentDialogId, items }) => {
     const [inputValue, setInputValue] = useState('');
     const [filtred, setFiltred] = useState(Array.from(items));
+
+    const user = useSelector(state => state.users.data);
 
     const onChangeInput = (value) => {
         setFiltred(
             items.filter(
                 dialog => 
-                dialog.user.fullname.toLowerCase().indexOf(value.toLowerCase()) >= 0
+                dialog.partner.fullname.toLowerCase().indexOf(value.toLowerCase()) >= 0  
+                ||
+                dialog.author.fullname.toLowerCase().indexOf(value.toLowerCase()) >= 0
             )
         );
         setInputValue(value);
@@ -20,20 +25,24 @@ const Dialogs = ({ fetchDialogs, currentDialogId, setCurrentDialogId, items, use
 
     useEffect(() => {
         if (!items.length) {
-            // fetchDialogs();
+            fetchDialogs();
         } else {
             setFiltred(items);
         }
     }, [items]);
 
+    socket.on('SERVER:DIALOG:CREATED', () => {
+        fetchDialogs();
+    });
+
     return (
         <Dialog 
-            userId={userId}
+            userId={user._id}
             items={filtred}
             onSearch={onChangeInput}
             inputValue={inputValue}
             currentDialogId={currentDialogId}
-            onSelectDialog={setCurrentDialogId}    
+            onSelectDialog={setCurrentDialogId}  
         />
     )
 }
