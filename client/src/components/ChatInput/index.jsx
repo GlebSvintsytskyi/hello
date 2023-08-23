@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { SmileOutlined, CameraOutlined, AudioOutlined, RightCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { SmileOutlined, CameraOutlined, AudioOutlined, RightCircleOutlined } from '@ant-design/icons';
 import { Upload, Input, Button } from 'antd';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
